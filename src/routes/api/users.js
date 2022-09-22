@@ -1,7 +1,7 @@
 const express = require('express')
 const sendEmail = require('../../utils/sendMail')
 const router = express.Router()
-
+require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('config')
@@ -61,9 +61,7 @@ router.post(
         userId: user._id,
         token: uuidv4()
       }).save()
-      const message = `${config.get('BASE_URL')}/users/verify/${user.id}/${
-        token.token
-      }`
+      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
       await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
@@ -75,7 +73,7 @@ router.post(
 
       jwt.sign(
         payload,
-        config.get('jwtSecret'),
+        process.env.jwtSecret,
         {
           expiresIn: 360000
         },

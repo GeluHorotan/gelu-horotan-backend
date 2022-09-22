@@ -9,13 +9,13 @@ const sendMail = async (email, subject, text) => {
       secure: true,
       port: 465,
       auth: {
-        user: config.get('uOFFICE_MAIL'),
-        pass: config.get('pOFFICE_MAIL')
+        user: process.env.uOFFICE_MAIL,
+        pass: process.env.pOFFICE_MAIL
       }
     })
 
     await transporter.sendMail({
-      from: config.get('uOFFICE_MAIL'),
+      from: process.env.uOFFICE_MAIL,
       to: email,
       subject: subject,
       text: text

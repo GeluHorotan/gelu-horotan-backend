@@ -12,7 +12,7 @@ app.use(express.json({ extended: false }))
 app.get('/', (req, res) => res.send('API Running'))
 
 // Define Routes
-// app.use('/api/users', require('./routes/api/users'))
+app.use('/api/users', require('./routes/api/users'))
 
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000
