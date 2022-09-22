@@ -1,7 +1,6 @@
 const express = require('express')
 const sendEmail = require('../../utils/sendMail')
 const router = express.Router()
-require('dotenv').config()
 
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -9,8 +8,6 @@ const config = require('config')
 const { check, validationResult } = require('express-validator')
 const nodemailer = require('nodemailer')
 const { v4: uuidv4 } = require('uuid')
-
-const env = process.env
 
 // Models
 const User = require('../../models/User')
@@ -60,11 +57,13 @@ router.post(
       await user.save()
 
       // Generate mail verification token and sending it
-      let token = await new Token({
+      let token = await new UserVerification({
         userId: user._id,
         token: uuidv4()
       }).save()
-      const message = `${env.BASE_URL}/users/verify/${user.id}/${token.token}`
+      const message = `${config.get('BASE_URL')}/users/verify/${user.id}/${
+        token.token
+      }`
       await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
@@ -97,17 +96,18 @@ router.get('/verify/:id/:token', async (req, res) => {
     const user = await User.findOne({ _id: req.params.id })
     if (!user) return res.status(400).send('Invalid link')
 
-    const token = await Token.findOne({
+    const token = await UserVerification.findOne({
       userId: user._id,
       token: req.params.token
     })
     if (!token) return res.status(400).send('Invalid link')
 
     await User.updateOne({ _id: user._id, verified: true })
-    await Token.findByIdAndRemove(token._id)
+    await UserVerification.findByIdAndRemove(token._id)
 
     res.send('email verified sucessfully')
-  } catch (error) {
+  } catch (err) {
+    console.error(err.message)
     res.status(400).send('An error occured')
   }
 })
