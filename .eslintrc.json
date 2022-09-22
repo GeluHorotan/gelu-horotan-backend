@@ -7,8 +7,7 @@
   "overrides": [],
   "comma-dangle": "never",
   "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
+    "ecmaVersion": "latest"
   },
 
   "rules": {}
