@@ -1,14 +1,12 @@
 {
   "env": {
     "browser": true,
+    "commonjs": true,
     "es2021": true
   },
-  "extends": "standard-with-typescript",
+  "extends": "eslint:recommended",
   "overrides": [],
-  "comma-dangle": "never",
   "parserOptions": {
     "ecmaVersion": "latest"
-  },
-
-  "rules": {}
+  }
 }
