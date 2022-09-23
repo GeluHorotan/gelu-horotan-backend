@@ -61,7 +61,7 @@ router.post(
         userId: user._id,
         token: uuidv4()
       }).save()
-      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
+      const message = `${process.env.PORT === 5000 ? process.env.LOCAL_URL : process.env.PROD_URL}/users/verify/${user.id}/${token.token}  ${} `
       await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
