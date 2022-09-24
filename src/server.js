@@ -9,9 +9,8 @@ connectDB()
 
 // Cors
 
-
 var corsOptions = {
-  origin: '*'
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
   optionsSuccessStatus: 200 // For legacy browser support
 }
