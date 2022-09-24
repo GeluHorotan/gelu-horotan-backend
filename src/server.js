@@ -9,15 +9,9 @@ connectDB()
 
 // Cors
 
-const whitelist = ['http://localhost:8080', 'https://geluhorotan.com']
+
 var corsOptions = {
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error())
-    }
-  },
+  origin: '*'
   methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
   optionsSuccessStatus: 200 // For legacy browser support
 }
