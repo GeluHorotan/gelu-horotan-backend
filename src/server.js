@@ -8,9 +8,9 @@ const app = express()
 connectDB()
 
 // Cors
-const whitelist = ['http://localhost:8888', 'https://geluhorotan.com/']
+
 var corsOptions = {
-  origin: whitelist,
+  origin: 'https://geluhorotan.com/',
   optionsSuccessStatus: 200 // For legacy browser support
 }
 
