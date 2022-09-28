@@ -1,9 +1,17 @@
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  firstName: {
     type: String,
     required: true
+  },
+  lastName: {
+    type: String,
+    required: true
+  },
+  avatar: {
+    type: String,
+    default: false
   },
   email: {
     type: String,
@@ -16,7 +24,6 @@ const UserSchema = new mongoose.Schema({
   },
   verified: {
     type: Boolean,
-
     default: false
   }
 })

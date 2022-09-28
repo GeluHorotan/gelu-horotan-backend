@@ -19,7 +19,8 @@ const UserVerification = require('../../models/UserVerification')
 
 router.post(
   '/',
-  check('name', 'Please include a valid name').notEmpty(),
+  check('firstName', 'Please include a valid first name').notEmpty(),
+  check('lastName', 'Please include a valid last name').notEmpty(),
   check('email', 'Please include a valid email').isEmail(),
   check(
     'password',
@@ -31,7 +32,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() })
     }
 
-    const { name, email, password } = req.body
+    const { firstName, lastName, email, password } = req.body
 
     try {
       let user = await User.findOne({ email })
@@ -44,7 +45,8 @@ router.post(
       }
 
       user = new User({
-        name,
+        firstName,
+        lastName,
         email,
         password
       })
@@ -61,9 +63,7 @@ router.post(
         userId: user._id,
         token: uuidv4()
       }).save()
-      const message = `${
-        process.env.PORT === 5000 ? process.env.LOCAL_URL : process.env.PROD_URL
-      }/users/verify/${user.id}/${token.token}`
+      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
       await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
