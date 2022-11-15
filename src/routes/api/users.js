@@ -1,5 +1,6 @@
 const express = require('express')
 const sendEmail = require('../../utils/sendMail')
+const capitalizeFirstLetter = require('../../utils/capitalizeFirstLetter')
 const router = express.Router()
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
@@ -32,7 +33,7 @@ router.post(
       return res.status(400).json({ errors: errors.array() })
     }
 
-    const { firstName, lastName, email, password } = req.body
+    let { firstName, lastName, email, password } = req.body
 
     try {
       let user = await User.findOne({ email })
@@ -43,6 +44,8 @@ router.post(
           .status(400)
           .json({ errors: [{ msg: 'User already exists' }] })
       }
+      firstName = capitalizeFirstLetter(firstName)
+      lastName = capitalizeFirstLetter(lastName)
 
       user = new User({
         firstName,
