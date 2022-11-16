@@ -1,6 +1,7 @@
 const express = require('express')
 const sendEmail = require('../../utils/sendMail')
 const capitalizeFirstLetter = require('../../utils/capitalizeFirstLetter')
+const salt = require('../../utils/salt')
 const router = express.Router()
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
@@ -55,8 +56,8 @@ router.post(
       })
 
       // Encrypt password
-      const salt = await bcrypt.genSalt(10)
-      user.password = await bcrypt.hash(password, salt)
+      const salted = await salt()
+      user.password = await bcrypt.hash(password, salted)
 
       // Save user to DB
       await user.save()
