@@ -1,5 +1,5 @@
 #This Dockerfile was created by Gelu
-FROM node: 12-alpine
+FROM node:12-alpine
 RUN apk add --no-cache python2 g++ make
 WORKDIR /app
 COPY . .
