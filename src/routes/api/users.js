@@ -1,8 +1,8 @@
 const express = require('express')
+const router = express.Router()
 const sendEmail = require('../../utils/sendMail')
 const capitalizeFirstLetter = require('../../utils/capitalizeFirstLetter')
 const salt = require('../../utils/salt')
-const router = express.Router()
 require('dotenv').config()
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -52,6 +52,7 @@ router.post(
         firstName,
         lastName,
         email,
+
         password
       })
 

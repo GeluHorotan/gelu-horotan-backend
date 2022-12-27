@@ -3,28 +3,40 @@ const mongoose = require('mongoose')
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: true
+    required: [true, 'Please add your first name.']
   },
   lastName: {
     type: String,
-    required: true
+    required: [true, 'Please add your last name.']
   },
-  avatar: {
-    type: String,
-    default: false
-  },
+
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please add a valid email.'
+    ]
+  },
+  role: {
+    type: String,
+    enum: ['user', 'developer', 'admin'],
+    default: 'user'
   },
   password: {
     type: String,
-    required: true
+    required: [true, 'Please add a password.'],
+    minlength: 6,
+    select: false
   },
-  verified: {
+  isEmailVerified: {
     type: Boolean,
     default: false
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
   }
 })
 
