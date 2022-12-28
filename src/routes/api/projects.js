@@ -7,6 +7,7 @@ const Project = require('../../models/Project')
 const User = require('../../models/User')
 
 // @route    POST api/projects
+// @route    POST api/projects
 // @desc     Create a project
 // @access   Private
 router.post(
