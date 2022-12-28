@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const config = require('config')
+// TEST
 require('dotenv').config()
 const connectDB = async () => {
   try {
