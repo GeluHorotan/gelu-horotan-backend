@@ -1,8 +1,19 @@
-#This Dockerfile was created by Gelu
-FROM node:12-alpine
-RUN apk add --no-cache python2 g++ make
-WORKDIR /GELU-HOROTAN-BACKEND
+FROM node:16
+
+# Create app directory
+WORKDIR /app
+
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
+
+# Bundle app source
 COPY . .
-RUN yarn install --production
-CMD ["node",'src/server.js']
+
 EXPOSE 3000
+CMD [ "node", "src/server.js" ]
