@@ -3,7 +3,9 @@ const router = express.Router()
 const sendEmail = require('../../utils/sendMail')
 const capitalizeFirstLetter = require('../../utils/capitalizeFirstLetter')
 const salt = require('../../utils/salt')
-require('dotenv').config()
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('config')
@@ -80,7 +82,7 @@ router.post(
 
       jwt.sign(
         payload,
-        process.env.jwtSecret,
+        process.env.JWTSECRET,
         {
           expiresIn: 360000
         },
