@@ -6,6 +6,9 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('config')
 const { check, validationResult } = require('express-validator')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 // @route   GET api/auth
 // @desc    Get user by token
@@ -38,7 +41,6 @@ router.post(
     const { email, password } = req.body
 
     try {
-      console.log('hey')
       let user = await User.findOne({ email }).select('+password')
 
       // Check if user exists
@@ -55,6 +57,7 @@ router.post(
           .status(400)
           .json({ errors: [{ msg: 'Invalid credentials' }] })
       }
+      console.log(isMatch)
 
       // Return jsonwebtoken
       const payload = {
@@ -62,11 +65,10 @@ router.post(
           id: user.id
         }
       }
-      console.log(payload)
 
       jwt.sign(
         payload,
-        config.get('jwtSecret'),
+        process.env.JWTSECRET,
         {
           expiresIn: 360000
         },
