@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const config = require('config')
-// TEST
+
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }

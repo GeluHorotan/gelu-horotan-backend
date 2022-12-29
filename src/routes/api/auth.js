@@ -38,7 +38,8 @@ router.post(
     const { email, password } = req.body
 
     try {
-      let user = await User.findOne({ email })
+      console.log('hey')
+      let user = await User.findOne({ email }).select('+password')
 
       // Check if user exists
       if (!user) {
@@ -61,6 +62,7 @@ router.post(
           id: user.id
         }
       }
+      console.log(payload)
 
       jwt.sign(
         payload,
