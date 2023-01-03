@@ -6,6 +6,7 @@ const salt = require('../../utils/salt')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+const cloudinary = require('cloudinary').v2
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const config = require('config')
@@ -16,6 +17,13 @@ const { v4: uuidv4 } = require('uuid')
 // Models
 const User = require('../../models/User')
 const UserVerification = require('../../models/UserVerification')
+
+// Cloudinary Connection
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET
+})
 
 // @route   POST api/users
 // @desc    Register user
@@ -36,7 +44,10 @@ router.post(
       return res.status(400).json({ errors: errors.array() })
     }
 
-    let { firstName, lastName, email, password } = req.body
+    let { firstName, lastName, email, password, profilePicture } = req.body
+
+    const base64URL = profilePicture
+    const file = base64URL
 
     try {
       let user = await User.findOne({ email })
@@ -49,12 +60,24 @@ router.post(
       }
       firstName = capitalizeFirstLetter(firstName)
       lastName = capitalizeFirstLetter(lastName)
+      let imageUrl
+      await cloudinary.uploader.upload(
+        file,
+        { resource_type: 'image', folder: 'Profile Pictures', format: 'png' },
+        (err, result) => {
+          if (err) {
+            console.log(err)
+            return
+          }
+          imageUrl = result.secure_url
+        }
+      )
 
       user = new User({
         firstName,
         lastName,
         email,
-
+        profilePicture: imageUrl,
         password
       })
 
@@ -66,12 +89,12 @@ router.post(
       await user.save()
 
       // Generate mail verification token and sending it
-      let token = await new UserVerification({
-        userId: user._id,
-        token: uuidv4()
-      }).save()
-      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
-      await sendEmail(user.email, 'Verify Email', message)
+      // let token = await new UserVerification({
+      //   userId: user._id,
+      //   token: uuidv4()
+      // }).save()
+      // const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
+      // await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
       const payload = {
@@ -97,6 +120,21 @@ router.post(
     }
   }
 )
+
+// @route GET api/users
+// @desc Get all users
+// @access Private - Admin Level
+router.get('/', async (req, res) => {
+  const roleQuery = req.query.filterByRole
+
+  try {
+    const users = await User.find({ role: { $gte: roleQuery } })
+    res.json(users)
+  } catch (err) {
+    console.error(err.message)
+    res.status(500).send('Server Error')
+  }
+})
 
 router.get('/verify/:id/:token', async (req, res) => {
   try {

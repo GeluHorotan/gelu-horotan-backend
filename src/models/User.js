@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { Role } = require('../utils/roles')
 
 const UserSchema = new mongoose.Schema({
   firstName: {
@@ -20,9 +21,8 @@ const UserSchema = new mongoose.Schema({
     ]
   },
   role: {
-    type: String,
-    enum: ['user', 'developer', 'admin'],
-    default: 'user'
+    type: Number,
+    default: Role.User
   },
   password: {
     type: String,
@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
   isEmailVerified: {
     type: Boolean,
     default: false
+  },
+  profilePicture: {
+    type: String,
+    default: 'nothing'
   },
   createdAt: {
     type: Date,
