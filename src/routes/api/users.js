@@ -31,6 +31,7 @@ cloudinary.config({
 
 router.post(
   '/',
+
   check('firstName', 'Please include a valid first name').notEmpty(),
   check('lastName', 'Please include a valid last name').notEmpty(),
   check('email', 'Please include a valid email').isEmail(),
@@ -63,7 +64,10 @@ router.post(
       let imageUrl
       await cloudinary.uploader.upload(
         file,
-        { resource_type: 'image', folder: 'Profile Pictures', format: 'png' },
+        {
+          resource_type: 'image',
+          folder: 'Profile Pictures'
+        },
         (err, result) => {
           if (err) {
             console.log(err)

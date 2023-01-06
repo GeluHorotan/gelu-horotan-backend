@@ -2,6 +2,7 @@ const express = require('express')
 const connectDB = require('../config/db')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
+const bodyParser = require('body-parser')
 
 const app = express()
 
@@ -17,6 +18,9 @@ var corsOptions = {
 }
 
 app.use(cors(corsOptions))
+// Express 4.0
+app.use(bodyParser.json({ limit: '10mb' }))
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }))
 
 // Init Middleware
 app.use(express.json({ extended: false }))
@@ -29,7 +33,11 @@ app.use('/api/auth', require('./routes/api/auth'))
 app.use('/api/profile', require('./routes/api/profile'))
 app.use('/api/projects', require('./routes/api/projects'))
 app.use('/api/test', require('./routes/api/test'))
-app.use(fileUpload({ useTempFiles: true }))
+app.use(
+  fileUpload({
+    useTempFiles: true
+  })
+)
 
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000
