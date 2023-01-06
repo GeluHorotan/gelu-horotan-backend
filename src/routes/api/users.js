@@ -93,12 +93,12 @@ router.post(
       await user.save()
 
       // Generate mail verification token and sending it
-      // let token = await new UserVerification({
-      //   userId: user._id,
-      //   token: uuidv4()
-      // }).save()
-      // const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
-      // await sendEmail(user.email, 'Verify Email', message)
+      let token = await new UserVerification({
+        userId: user._id,
+        token: uuidv4()
+      }).save()
+      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
+      await sendEmail(user.email, 'Verify Email', message)
 
       // Return jsonwebtoken
       const payload = {

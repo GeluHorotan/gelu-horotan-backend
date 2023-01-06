@@ -1,6 +1,9 @@
 const { text } = require('express')
 const nodemailer = require('nodemailer')
 const config = require('config')
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
 
 const sendMail = async (email, subject, text) => {
   try {
@@ -9,13 +12,13 @@ const sendMail = async (email, subject, text) => {
       secure: true,
       port: 465,
       auth: {
-        user: process.env.uOFFICE_MAIL,
-        pass: process.env.pOFFICE_MAIL
+        user: process.env.OFFICE_MAIL_USERNAME,
+        pass: process.env.OFFICE_MAIL_PASS
       }
     })
 
     await transporter.sendMail({
-      from: process.env.uOFFICE_MAIL,
+      from: process.env.OFFICE_MAIL_USERNAME,
       to: email,
       subject: subject,
       text: text
