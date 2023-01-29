@@ -4,6 +4,7 @@ const config = require('config')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+// TEST
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGOURI, {
