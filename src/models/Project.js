@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
 
 const ProjectSchema = new mongoose.Schema({
-  title: {
+  fullProjectName: {
     type: String,
     required: true
   },
   desc: {
+    type: String,
+    required: true
+  },
+  abbreviation: {
     type: String,
     required: true
   },
@@ -18,24 +22,27 @@ const ProjectSchema = new mongoose.Schema({
   },
   technologies: [
     {
-      name: {
-        type: String
-      }
-    }
-  ],
-  libraries: [
-    {
-      name: {
-        type: String
-      }
-    }
-  ],
-  team: [
-    {
-      name: {
+      value: {
         type: String
       },
-      position: {
+      label: {
+        type: String
+      }
+    }
+  ],
+
+  team: [
+    {
+      value: {
+        type: String
+      },
+      label: {
+        type: String
+      },
+      profilePicture: {
+        type: String
+      },
+      role: {
         type: String
       }
     }

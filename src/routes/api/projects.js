@@ -13,7 +13,7 @@ const User = require('../../models/User')
 router.post(
   '/',
   auth,
-  check('title', 'Title is required').notEmpty(),
+  check('fullProjectName', 'Title is required').notEmpty(),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -24,10 +24,15 @@ router.post(
       const user = await User.findById(req.user.id).select('-password')
 
       const newProject = new Project({
-        title: req.body.title,
-        desc: req.body.title,
-        startDate: req.body.startDate
+        fullProjectName: req.body.fullProjectName,
+        desc: req.body.desc,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        abbreviation: req.body.abbreviation,
+        team: req.body.team,
+        technologies: req.body.technologies
       })
+      console.log(req.body)
 
       const post = await newProject.save()
 
