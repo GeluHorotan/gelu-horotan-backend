@@ -13,7 +13,7 @@ const User = require('../../models/User')
 router.post(
   '/',
   auth,
-  check('fullProjectName', 'Title is required').notEmpty(),
+  check('fullProjectName', 'Project name is required').notEmpty(),
   async (req, res) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -25,14 +25,15 @@ router.post(
 
       const newProject = new Project({
         fullProjectName: req.body.fullProjectName,
+        url: req.body.url,
         desc: req.body.desc,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         abbreviation: req.body.abbreviation,
         team: req.body.team,
-        technologies: req.body.technologies
+        technologies: req.body.technologies,
+        images: req.body.images
       })
-      console.log(req.body)
 
       const post = await newProject.save()
 

@@ -9,10 +9,7 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  abbreviation: {
-    type: String,
-    required: true
-  },
+
   startDate: {
     type: Date,
     required: true
@@ -46,7 +43,18 @@ const ProjectSchema = new mongoose.Schema({
         type: String
       }
     }
-  ]
+  ],
+  images: {
+    gallery: {
+      type: Array
+    },
+    mobile: {
+      type: String
+    },
+    header: {
+      type: String
+    }
+  }
 })
 
 module.exports = mongoose.model('project', ProjectSchema)
