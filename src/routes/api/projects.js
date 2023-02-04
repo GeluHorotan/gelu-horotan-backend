@@ -22,55 +22,59 @@ router.post(
 
     try {
       const user = await User.findById(req.user.id).select('-password')
-      let mobileImage, headerImage, galleryImages
+      let mobileImage, headerImage
+      let galleryImages = []
 
-      await cloudinary.uploader.upload(
-        req.body.images.mobile,
-        {
-          resource_type: 'image',
-          folder: `Projects/${req.body.fullProjectName}/mobile`,
-          public_id: 'mobileImage'
-        },
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          mobileImage = result.secure_url
-        }
-      )
-      await cloudinary.uploader.upload(
-        req.body.images.header,
-        {
-          resource_type: 'image',
-          folder: `Projects/${req.body.fullProjectName}/header`,
-          public_id: 'headerImage'
-        },
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          headerImage = result.secure_url
-        }
-      )
-      req.body.images.gallery.forEach(async image => {
-        await cloudinary.uploader.upload(
-          image,
+      req.body.images.mobile &&
+        (await cloudinary.uploader.upload(
+          req.body.images.mobile,
           {
             resource_type: 'image',
-            folder: `Projects/${req.body.fullProjectName}/gallery`,
-            public_id: `galleryImage${Date.now()}`
+            folder: `Projects/${req.body.fullProjectName}/mobile`,
+            public_id: 'mobileImage'
           },
           (err, result) => {
             if (err) {
               console.log(err)
               return
             }
-            galleryImages.push(result.secure_url)
+            mobileImage = result.secure_url
           }
-        )
-      })
+        ))
+      req.body.images.header &&
+        (await cloudinary.uploader.upload(
+          req.body.images.header,
+          {
+            resource_type: 'image',
+            folder: `Projects/${req.body.fullProjectName}/header`,
+            public_id: 'headerImage'
+          },
+          (err, result) => {
+            if (err) {
+              console.log(err)
+              return
+            }
+            headerImage = result.secure_url
+          }
+        ))
+      req.body.images.gallery &&
+        req.body.images.gallery.forEach(async image => {
+          await cloudinary.uploader.upload(
+            image,
+            {
+              resource_type: 'image',
+              folder: `Projects/${req.body.fullProjectName}/gallery`,
+              public_id: `galleryImage${Date.now()}`
+            },
+            (err, result) => {
+              if (err) {
+                console.log(err)
+                return
+              }
+              galleryImages.push(result.secure_url)
+            }
+          )
+        })
 
       let projectImages = {
         mobile: mobileImage,

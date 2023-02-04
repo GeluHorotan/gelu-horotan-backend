@@ -8,7 +8,8 @@ if (process.env.NODE_ENV !== 'production') {
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGOURI, {
-      useNewUrlParser: true
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     })
     console.log('MongoDB Connected...')
   } catch (err) {
