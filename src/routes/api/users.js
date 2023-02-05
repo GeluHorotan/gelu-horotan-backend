@@ -192,9 +192,15 @@ router.post('/resend-email-verification', async (req, res) => {
   try {
     const user = await User.findOne({ _id: user_id })
     if (!user) return res.status(400).send('User not found')
-
+    if (user.isEmailVerified)
+      return res.status(400).send('User is already verified!')
+    const oldToken = await UserVerification.findOne({ userId: user_id })
+    if (!oldToken) return res.status(400).send('Token not found!')
+    const now = new Date()
+    if (now < oldToken.expiresAt)
+      return res.status(400).send('A token has been already created!')
     // Delete the old token
-    await UserVerification.findOneAndRemove(user_id)
+    await UserVerification.findOneAndRemove(oldToken._id)
 
     // Generate a new token and send the email
     const newToken = await new UserVerification({
