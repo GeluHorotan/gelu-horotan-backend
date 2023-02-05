@@ -129,7 +129,7 @@ router.post(
     Please note that this email was sent from a no-reply address, so we won't be able to respond to any reply. But rest assured that once you've verified your email, you'll be all set to join the party!
     </p>
     <p>Click the button below to verify your email:</p>
-    <a href=${process.env.BASE_URL}/users/verify/${user.id}/${token.token} class="button">Verify Email</a>
+    <a href='${process.env.BASE_URL}/email-confirmation?user_id=${user.id}&token=${token.token}' class="button">Verify Email</a>
     <p>
       Thanks for choosing us! We can't wait for you to join the fun.
     </p>
