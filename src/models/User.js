@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     select: false
   },
-  isMailVerified: {
+  isEmailVerified: {
     type: Boolean,
     default: false
   },

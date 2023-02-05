@@ -10,6 +10,11 @@ const tokenSchema = new Schema({
   token: {
     type: String,
     required: true
+  },
+  expiresAt: {
+    type: Date,
+    required: true,
+    default: Date.now() + 60 * 60 * 1000 // Expires in 1 hour from now
   }
 })
 

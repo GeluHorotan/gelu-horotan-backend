@@ -28,7 +28,6 @@ cloudinary.config({
 // @route   POST api/users
 // @desc    Register user
 // @access  Public
-
 router.post(
   '/',
 
@@ -129,7 +128,7 @@ router.post(
     Please note that this email was sent from a no-reply address, so we won't be able to respond to any reply. But rest assured that once you've verified your email, you'll be all set to join the party!
     </p>
     <p>Click the button below to verify your email:</p>
-    <a href='${process.env.BASE_URL}/email-confirmation?user_id=${user.id}&token=${token.token}' class="button">Verify Email</a>
+    <a href='${process.env.BASE_URL}/email-verification?user_id=${user.id}&verification_token=${token.token}' class="button">Verify Email</a>
     <p>
       Thanks for choosing us! We can't wait for you to join the fun.
     </p>
@@ -187,18 +186,23 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/verify/:id/:token', async (req, res) => {
+router.put('/email-confirmation', async (req, res) => {
+  let { user_id, verification_token } = req.body
+
   try {
-    const user = await User.findOne({ _id: req.params.id })
+    const user = await User.findOne({ _id: user_id })
     if (!user) return res.status(400).send('Invalid link')
 
     const token = await UserVerification.findOne({
       userId: user._id,
-      token: req.params.token
+      token: verification_token
     })
     if (!token) return res.status(400).send('Invalid link')
 
-    await User.updateOne({ _id: user._id, isMailVerified: true })
+    const now = new Date()
+    if (now > token.expiresAt) return res.status(400).send('Token has expired')
+
+    await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
     res.send('email verified sucessfully')
