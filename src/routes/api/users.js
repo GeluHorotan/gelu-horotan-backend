@@ -200,7 +200,10 @@ router.put('/email-confirmation', async (req, res) => {
     if (!token) return res.status(400).send('Invalid link')
 
     const now = new Date()
-    if (now > token.expiresAt) return res.status(400).send('Token has expired')
+    if (now > token.expiresAt) {
+      await UserVerification.findByIdAndRemove(token._id)
+      return res.status(400).send('Token has expired')
+    }
 
     await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
