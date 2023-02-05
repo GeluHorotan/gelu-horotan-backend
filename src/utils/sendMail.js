@@ -5,23 +5,24 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
-const sendMail = async (email, subject, text) => {
+const sendMail = async (author, recipient, title, content) => {
   try {
     const transporter = nodemailer.createTransport({
       host: 'smtp.zoho.eu',
       secure: true,
       port: 465,
       auth: {
-        user: process.env.OFFICE_MAIL_USERNAME,
-        pass: process.env.OFFICE_MAIL_PASS
+        user: author,
+        pass: process.env.MAIL_PASS
       }
     })
 
     await transporter.sendMail({
-      from: process.env.OFFICE_MAIL_USERNAME,
-      to: email,
-      subject: subject,
-      text: text
+      from: author,
+      to: recipient,
+      subject: title,
+      // text: content
+      html: content
     })
 
     console.log('email sent succesfully')

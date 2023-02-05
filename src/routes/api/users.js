@@ -97,8 +97,55 @@ router.post(
         userId: user._id,
         token: uuidv4()
       }).save()
-      const message = `${process.env.BASE_URL}/users/verify/${user.id}/${token.token}`
-      await sendEmail(user.email, 'Verify Email', message)
+
+      const message = `<html>
+  <head>
+    <style>
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+
+        #firstName {
+          font-weight: 700;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Verify your email address</h3>
+    <p>Hi <span id="firstName">${user.firstName}</span> ,</p>
+    <p>
+     We hope this email finds you in high spirits! Before you can start enjoying all the fun and excitement on our platform, we just need to verify your email address. It's a quick and easy process that will ensure that you receive all important updates and notifications from us.
+    </p>
+    <p>
+    Please note that this email was sent from a no-reply address, so we won't be able to respond to any reply. But rest assured that once you've verified your email, you'll be all set to join the party!
+    </p>
+    <p>Click the button below to verify your email:</p>
+    <a href=${process.env.BASE_URL}/users/verify/${user.id}/${token.token} class="button">Verify Email</a>
+    <p>
+      Thanks for choosing us! We can't wait for you to join the fun.
+    </p>
+    <p>
+      Regards,<br>
+      Your Team
+    </p>
+  </body>
+</html>`
+
+      await sendEmail(
+        process.env.NOREPLY_MAIL_USERNAME,
+        user.email,
+        'Verify Your Email and Join the Fun!',
+        message
+      )
 
       // Return jsonwebtoken
       const payload = {
@@ -151,7 +198,7 @@ router.get('/verify/:id/:token', async (req, res) => {
     })
     if (!token) return res.status(400).send('Invalid link')
 
-    await User.updateOne({ _id: user._id, verified: true })
+    await User.updateOne({ _id: user._id, isMailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
     res.send('email verified sucessfully')
