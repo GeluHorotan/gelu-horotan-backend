@@ -186,7 +186,79 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.put('/email-confirmation', async (req, res) => {
+router.post('/resend-email-verification', async (req, res) => {
+  const { user_id } = req.body
+
+  try {
+    const user = await User.findOne({ _id: user_id })
+    if (!user) return res.status(400).send('User not found')
+
+    // Delete the old token
+    await UserVerification.findOneAndRemove(user_id)
+
+    // Generate a new token and send the email
+    const newToken = await new UserVerification({
+      userId: user._id,
+      token: uuidv4()
+    }).save()
+
+    const message = `<html>
+  <head>
+    <style>
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+
+        #firstName {
+          font-weight: 700;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Verify your email address</h3>
+    <p>Hi <span id="firstName">${user.firstName}</span> ,</p>
+    <p>
+     We hope this email finds you in high spirits! Before you can start enjoying all the fun and excitement on our platform, we just need to verify your email address. It's a quick and easy process that will ensure that you receive all important updates and notifications from us.
+    </p>
+    <p>
+    Please note that this email was sent from a no-reply address, so we won't be able to respond to any reply. But rest assured that once you've verified your email, you'll be all set to join the party!
+    </p>
+    <p>Click the button below to verify your email (regenerated):</p>
+    <a href='${process.env.BASE_URL}/email-verification?user_id=${user.id}&verification_token=${newToken.token}' class="button">Verify Email</a>
+    <p>
+      Thanks for choosing us! We can't wait for you to join the fun.
+    </p>
+    <p>
+      Regards,<br>
+      Your Team
+    </p>
+  </body>
+</html>`
+
+    await sendEmail(
+      process.env.NOREPLY_MAIL_USERNAME,
+      user.email,
+      'Verify Your Email and Join the Fun!',
+      message
+    )
+
+    res.send('Verification email sent')
+  } catch (err) {
+    console.error(err.message)
+    res.status(400).send('An error occurred')
+  }
+})
+
+router.put('/email-verification', async (req, res) => {
   let { user_id, verification_token } = req.body
 
   try {
@@ -201,7 +273,7 @@ router.put('/email-confirmation', async (req, res) => {
 
     const now = new Date()
     if (now > token.expiresAt) {
-      await UserVerification.findByIdAndRemove(token._id)
+      // await UserVerification.findByIdAndRemove(token._id)
       return res.status(400).send('Token has expired')
     }
 
