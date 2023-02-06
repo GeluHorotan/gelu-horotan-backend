@@ -193,12 +193,12 @@ router.post('/resend-email-verification', async (req, res) => {
     const user = await User.findOne({ _id: user_id })
     if (!user) return res.status(400).send('User not found')
     if (user.isEmailVerified)
-      return res.status(400).send('User is already verified!')
+      return res.json({ msg: 'User is already verified!' })
     const oldToken = await UserVerification.findOne({ userId: user_id })
-    if (!oldToken) return res.status(400).send('Token not found!')
+    if (!oldToken) return res.json({ msg: 'Token not found!' })
     const now = new Date()
     if (now < oldToken.expiresAt)
-      return res.status(400).send('A token has been already created!')
+      return res.json({ msg: 'A token has been already created!' })
     // Delete the old token
     await UserVerification.findOneAndRemove(oldToken._id)
 
@@ -257,10 +257,9 @@ router.post('/resend-email-verification', async (req, res) => {
       message
     )
 
-    res.send('Verification email sent')
+    res.json({ msg: 'Verification email sent' })
   } catch (err) {
-    console.error(err.message)
-    res.status(400).send('An error occurred')
+    res.status(500).json({ msg: 'Server error' })
   }
 })
 
@@ -269,27 +268,28 @@ router.put('/email-verification', async (req, res) => {
 
   try {
     const user = await User.findOne({ _id: user_id })
-    if (!user) return res.status(400).send('Invalid link')
+    if (!user) return res.json({ msg: 'Invalid link' })
+    if (user.isEmailVerified)
+      return res.json({ msg: 'User is already verified!' })
 
     const token = await UserVerification.findOne({
       userId: user._id,
       token: verification_token
     })
-    if (!token) return res.status(400).send('Invalid link')
+    if (!token) return res.json({ msg: 'Invalid link' })
 
     const now = new Date()
     if (now > token.expiresAt) {
       // await UserVerification.findByIdAndRemove(token._id)
-      return res.status(400).send('Token has expired')
+      return res.json({ msg: 'Token has expired' })
     }
 
     await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
-    res.send('email verified sucessfully')
+    res.json({ msg: 'email verified sucessfully' })
   } catch (err) {
-    console.error(err.message)
-    res.status(400).send('An error occured')
+    res.status(500).json({ msg: 'Server error' })
   }
 })
 
