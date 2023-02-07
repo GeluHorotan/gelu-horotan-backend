@@ -6,6 +6,8 @@ const salt = require('../../utils/salt')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
+const asyncHandler = require('../../middleware/async')
+const ErrorResponse = require('../../utils/errorResponse')
 const cloudinary = require('cloudinary').v2
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
@@ -39,10 +41,10 @@ router.post(
     'password',
     'Please enter a password with 6 or more characters'
   ).isLength({ min: 6 }),
-  async (req, res) => {
+  asyncHandler(async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() })
+      return next(new ErrorResponse(errors.array(), 400))
     }
 
     let { firstName, lastName, email, password, profilePicture } = req.body
@@ -50,55 +52,52 @@ router.post(
     const base64URL = profilePicture
     const file = base64URL
 
-    try {
-      let user = await User.findOne({ email })
+    let user = await User.findOne({ email })
 
-      // Check if user exists
-      if (user) {
-        return res
-          .status(400)
-          .json({ errors: [{ msg: 'User already exists' }] })
-      }
-      firstName = capitalizeFirstLetter(firstName)
-      lastName = capitalizeFirstLetter(lastName)
-      let imageUrl
-      await cloudinary.uploader.upload(
-        file,
-        {
-          resource_type: 'image',
-          folder: 'Profile Pictures'
-        },
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          imageUrl = result.secure_url
+    // Check if user exists
+    if (user) {
+      return next(new ErrorResponse(`User already exists.`, 400))
+    }
+    firstName = capitalizeFirstLetter(firstName)
+    lastName = capitalizeFirstLetter(lastName)
+    let imageUrl
+    await cloudinary.uploader.upload(
+      file,
+      {
+        resource_type: 'image',
+        folder: 'Profile Pictures'
+      },
+      (err, result) => {
+        if (err) {
+          console.log(err)
+          return
         }
-      )
+        imageUrl = result.secure_url
+      }
+    )
 
-      user = new User({
-        firstName,
-        lastName,
-        email,
-        profilePicture: imageUrl,
-        password
-      })
+    user = new User({
+      firstName,
+      lastName,
+      email,
+      profilePicture: imageUrl,
+      password
+    })
 
-      // Encrypt password
-      const salted = await salt()
-      user.password = await bcrypt.hash(password, salted)
+    // Encrypt password
+    const salted = await salt()
+    user.password = await bcrypt.hash(password, salted)
 
-      // Save user to DB
-      await user.save()
+    // Save user to DB
+    await user.save()
 
-      // Generate mail verification token and sending it
-      let token = await new UserVerification({
-        userId: user._id,
-        token: uuidv4()
-      }).save()
+    // Generate mail verification token and sending it
+    let token = await new UserVerification({
+      userId: user._id,
+      token: uuidv4()
+    }).save()
 
-      const message = `<html>
+    const message = `<html>
   <head>
     <style>
       .button {
@@ -140,65 +139,75 @@ router.post(
   </body>
 </html>`
 
-      await sendEmail(
-        process.env.NOREPLY_MAIL_USERNAME,
-        user.email,
-        'Verify Your Email and Join the Fun!',
-        message
-      )
+    await sendEmail(
+      process.env.NOREPLY_MAIL_USERNAME,
+      user.email,
+      'Verify Your Email and Join the Fun!',
+      message
+    )
 
-      // Return jsonwebtoken
-      const payload = {
-        user: {
-          id: user.id
-        }
+    // Return jsonwebtoken
+    const payload = {
+      user: {
+        id: user.id
       }
-
-      jwt.sign(
-        payload,
-        process.env.JWTSECRET,
-        {
-          expiresIn: 360000
-        },
-        (err, token) => {
-          if (err) throw err
-          res.json({ token })
-        }
-      )
-    } catch (err) {
-      console.error(err.message)
-      res.status(500).send('Server error')
     }
-  }
+
+    jwt.sign(
+      payload,
+      process.env.JWTSECRET,
+      {
+        expiresIn: 360000
+      },
+      (err, token) => {
+        if (err) throw err
+        res
+          .status(200)
+          .json({
+            success: true,
+            msg: 'User created successfully.',
+            data: token
+          })
+      }
+    )
+  })
 )
 
 // @route GET api/users
 // @desc Get all users
 // @access Private - Admin Level
-router.get('/', async (req, res, next) => {
-  const roleQuery = req.query.filterByRole
-
-  try {
+router.get(
+  '/',
+  asyncHandler(async (req, res, next) => {
+    const roleQuery = req.query.filterByRole
     const users = await User.find({ role: { $gte: roleQuery } })
-    res.json(users)
-  } catch (err) {
-    next(err)
-  }
-})
 
-router.post('/resend-email-verification', async (req, res) => {
-  const { user_id } = req.body
+    if (users.length === 0) {
+      return next(
+        new ErrorResponse(`Resource not found with id of ${roleQuery}`, 404)
+      )
+    }
+    res.status(200).json({ success: true, data: users })
+  })
+)
 
-  try {
+// @route POST api/users/resend-email-verification
+// @desc Resend email confirmation
+// @access Public
+router.post(
+  '/resend-email-verification',
+  asyncHandler(async (req, res, next) => {
+    const { user_id } = req.body
+
     const user = await User.findOne({ _id: user_id })
     if (!user) return res.status(400).send('User not found')
     if (user.isEmailVerified)
-      return res.json({ msg: 'User is already verified!' })
+      return next(new ErrorResponse(`User is already verified.`, 400))
     const oldToken = await UserVerification.findOne({ userId: user_id })
-    if (!oldToken) return res.json({ msg: 'Token not found!' })
+    if (!oldToken) return next(new ErrorResponse(`Token not found.`, 404))
     const now = new Date()
     if (now < oldToken.expiresAt)
-      return res.json({ msg: 'A token has been already created!' })
+      return next(new ErrorResponse(`A token has already been created`, 400))
     // Delete the old token
     await UserVerification.findOneAndRemove(oldToken._id)
 
@@ -257,40 +266,40 @@ router.post('/resend-email-verification', async (req, res) => {
       message
     )
 
-    res.json({ msg: 'Verification email sent' })
-  } catch (err) {
-    res.status(500).json({ msg: 'Server error' })
-  }
-})
+    return next(new ErrorResponse(`Verification email sent.`, 200))
+  })
+)
 
-router.put('/email-verification', async (req, res) => {
-  let { user_id, verification_token } = req.body
+// @route POST api/users/email-verification
+// @desc Mail confirmation
+// @access Public
+router.put(
+  '/email-verification',
+  asyncHandler(async (req, res, next) => {
+    let { user_id, verification_token } = req.body
 
-  try {
     const user = await User.findOne({ _id: user_id })
     if (!user) return res.json({ msg: 'Invalid link' })
     if (user.isEmailVerified)
-      return res.json({ msg: 'User is already verified!' })
+      return next(new ErrorResponse(`User is already verified`, 400))
 
     const token = await UserVerification.findOne({
       userId: user._id,
       token: verification_token
     })
-    if (!token) return res.json({ msg: 'Invalid link' })
+    if (!token) return next(new ErrorResponse(`Invalid link`, 400))
 
     const now = new Date()
     if (now > token.expiresAt) {
       // await UserVerification.findByIdAndRemove(token._id)
-      return res.json({ msg: 'Token has expired' })
+      return next(new ErrorResponse(`Token has expired.`, 400))
     }
 
     await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
-    res.json({ msg: 'email verified sucessfully' })
-  } catch (err) {
-    res.status(500).json({ msg: 'Server error' })
-  }
-})
+    return next(new ErrorResponse(`Email verified succesfully.`, 200))
+  })
+)
 
 module.exports = router
