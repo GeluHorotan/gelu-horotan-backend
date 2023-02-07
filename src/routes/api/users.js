@@ -34,6 +34,7 @@ router.post(
   check('firstName', 'Please include a valid first name').notEmpty(),
   check('lastName', 'Please include a valid last name').notEmpty(),
   check('email', 'Please include a valid email').isEmail(),
+
   check(
     'password',
     'Please enter a password with 6 or more characters'
@@ -174,15 +175,14 @@ router.post(
 // @route GET api/users
 // @desc Get all users
 // @access Private - Admin Level
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   const roleQuery = req.query.filterByRole
 
   try {
     const users = await User.find({ role: { $gte: roleQuery } })
     res.json(users)
   } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
+    next(err)
   }
 })
 

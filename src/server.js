@@ -3,7 +3,9 @@ const connectDB = require('../config/db')
 const cors = require('cors')
 const fileUpload = require('express-fileupload')
 const bodyParser = require('body-parser')
-
+const errorHandler = require('./middleware/error')
+var colors = require('colors')
+colors.enable()
 const app = express()
 const http = require('http').createServer(app)
 const socketio = require('socket.io')
@@ -56,5 +58,7 @@ http.listen(8080, () => {
 io.on('connection', socket => {
   app.set('socket', socket)
 })
+
+app.use(errorHandler)
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
