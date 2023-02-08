@@ -161,13 +161,11 @@ router.post(
       },
       (err, token) => {
         if (err) throw err
-        res
-          .status(200)
-          .json({
-            success: true,
-            msg: 'User created successfully.',
-            data: token
-          })
+        res.status(200).json({
+          success: true,
+          msg: 'User created successfully. -bb',
+          token: token
+        })
       }
     )
   })
@@ -195,19 +193,21 @@ router.get(
 // @desc Resend email confirmation
 // @access Public
 router.post(
-  '/resend-email-verification',
+  '/resend-email-confirmation',
   asyncHandler(async (req, res, next) => {
     const { user_id } = req.body
 
     const user = await User.findOne({ _id: user_id })
-    if (!user) return res.status(400).send('User not found')
+    if (!user) return res.status(400).send('User not found  - bb')
     if (user.isEmailVerified)
-      return next(new ErrorResponse(`User is already verified.`, 400))
+      return next(new ErrorResponse(`User is already verified.  - bb`, 400))
     const oldToken = await UserVerification.findOne({ userId: user_id })
-    if (!oldToken) return next(new ErrorResponse(`Token not found.`, 404))
+    if (!oldToken) return next(new ErrorResponse(`Token not found.  - bb`, 400))
     const now = new Date()
     if (now < oldToken.expiresAt)
-      return next(new ErrorResponse(`A token has already been created`, 400))
+      return next(
+        new ErrorResponse(`A token has already been created - bb`, 400)
+      )
     // Delete the old token
     await UserVerification.findOneAndRemove(oldToken._id)
 
@@ -262,11 +262,11 @@ router.post(
     await sendEmail(
       process.env.NOREPLY_MAIL_USERNAME,
       user.email,
-      'Verify Your Email and Join the Fun!',
+      'Verify Your Email and Join the Fun!  - bb',
       message
     )
 
-    return next(new ErrorResponse(`Verification email sent.`, 200))
+    return next(new ErrorResponse(`Verification email sent.  - bb`, 200))
   })
 )
 
@@ -274,31 +274,32 @@ router.post(
 // @desc Mail confirmation
 // @access Public
 router.put(
-  '/email-verification',
+  '/email-confirmation',
   asyncHandler(async (req, res, next) => {
     let { user_id, verification_token } = req.body
 
     const user = await User.findOne({ _id: user_id })
-    if (!user) return res.json({ msg: 'Invalid link' })
+    if (!user)
+      return next(new ErrorResponse(`User is already verified  - bb`, 400))
     if (user.isEmailVerified)
-      return next(new ErrorResponse(`User is already verified`, 400))
+      return next(new ErrorResponse(`User is already verified  - bb`, 400))
 
     const token = await UserVerification.findOne({
       userId: user._id,
       token: verification_token
     })
-    if (!token) return next(new ErrorResponse(`Invalid link`, 400))
+    if (!token) return next(new ErrorResponse(`Invalid link -bb`, 400))
 
     const now = new Date()
     if (now > token.expiresAt) {
       // await UserVerification.findByIdAndRemove(token._id)
-      return next(new ErrorResponse(`Token has expired.`, 400))
+      return next(new ErrorResponse(`Token has expired. -bb`, 400))
     }
 
     await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
-    return next(new ErrorResponse(`Email verified succesfully.`, 200))
+    return next(new ErrorResponse(`Email verified succesfully. -bb`, 200))
   })
 )
 

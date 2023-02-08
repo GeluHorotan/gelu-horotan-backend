@@ -8,12 +8,16 @@ const { check, validationResult } = require('express-validator')
 const capitalizeFirstLetter = require('../../utils/capitalizeFirstLetter')
 const salt = require('../../utils/salt')
 const User = require('../../models/User')
+const asyncHandler = require('../../middleware/async')
+const ErrorResponse = require('../../utils/errorResponse')
 
 // @route    GET api/profile
 // @desc     Get current user profile and update it
 // @access   Private
-router.put('/update', auth, async (req, res) => {
-  try {
+router.put(
+  '/update',
+  auth,
+  asyncHandler(async (req, res, next) => {
     let { firstName, lastName, email, password, oldPassword } = req.body
     if (firstName && firstName.length !== 0) {
       firstName = capitalizeFirstLetter(firstName)
@@ -35,9 +39,7 @@ router.put('/update', auth, async (req, res) => {
       if (validPassword) {
         const salted = await salt()
         password = await bcrypt.hash(password, salted)
-        console.log('PASSSOWRD UPDATED')
       } else {
-        console.log('NOT WORKING')
       }
     }
 
@@ -55,14 +57,13 @@ router.put('/update', auth, async (req, res) => {
     ).select('-password')
 
     if (!user) {
-      return res.status(400).json({ msg: 'There is no profile for this user' })
+      return next(
+        new ErrorResponse(`There is no profile for this user.  - bb`, 400)
+      )
     }
 
-    res.json(user)
-  } catch (err) {
-    console.error(err.message)
-    res.status(500).send('Server Error')
-  }
-})
+    res.status(200).json({ success: true, user: user })
+  })
+)
 
 module.exports = router
