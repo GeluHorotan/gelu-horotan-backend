@@ -95,9 +95,9 @@ router.post(
       images: projectImages
     })
 
-    const Project = await newProject.save()
+    const NewProject = await newProject.save()
 
-    res.status(200).json({ success: true, project: Project })
+    res.status(200).json({ success: true, project: NewProject })
   })
 )
 

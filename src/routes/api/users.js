@@ -56,7 +56,12 @@ router.post(
 
     // Check if user exists
     if (user) {
-      return next(new ErrorResponse(`User already exists.`, 400))
+      return next(
+        new ErrorResponse(
+          `Whoops! It looks like this username is already taken. Better try a different one.`,
+          400
+        )
+      )
     }
     firstName = capitalizeFirstLetter(firstName)
     lastName = capitalizeFirstLetter(lastName)
@@ -163,7 +168,7 @@ router.post(
         if (err) throw err
         res.status(200).json({
           success: true,
-          msg: 'User created successfully. -bb',
+          msg: 'User created successfully. Welcome to the club!',
           token: token
         })
       }
@@ -182,10 +187,13 @@ router.get(
 
     if (users.length === 0) {
       return next(
-        new ErrorResponse(`Resource not found with id of ${roleQuery}`, 404)
+        new ErrorResponse(
+          `Uh oh, couldn't find the resource what with the id of ${roleQuery}!`,
+          400
+        )
       )
     }
-    res.status(200).json({ success: true, data: users })
+    res.status(200).json({ success: true, users: users })
   })
 )
 
@@ -198,15 +206,24 @@ router.post(
     const { user_id } = req.body
 
     const user = await User.findOne({ _id: user_id })
-    if (!user) return res.status(400).send('User not found  - bb')
+    if (!user) next(new ErrorResponse(`This user doesn't exist!`, 400))
     if (user.isEmailVerified)
-      return next(new ErrorResponse(`User is already verified.  - bb`, 400))
+      return next(new ErrorResponse(`This user is already verified.`, 400))
     const oldToken = await UserVerification.findOne({ userId: user_id })
-    if (!oldToken) return next(new ErrorResponse(`Token not found.  - bb`, 400))
+    if (!oldToken)
+      return next(
+        new ErrorResponse(
+          `The token fairy must have taken it. Couldn't find the token you were looking for.`,
+          400
+        )
+      )
     const now = new Date()
     if (now < oldToken.expiresAt)
       return next(
-        new ErrorResponse(`A token has already been created - bb`, 400)
+        new ErrorResponse(
+          `A token has already been generated. It's like a snowflake, each one is unique.`,
+          400
+        )
       )
     // Delete the old token
     await UserVerification.findOneAndRemove(oldToken._id)
@@ -266,7 +283,10 @@ router.post(
       message
     )
 
-    return next(new ErrorResponse(`Verification email sent.  - bb`, 200))
+    res.status(200).json({
+      success: true,
+      msg: 'Verification email successfully launched into cyberspace!'
+    })
   })
 )
 
@@ -279,27 +299,39 @@ router.put(
     let { user_id, verification_token } = req.body
 
     const user = await User.findOne({ _id: user_id })
-    if (!user)
-      return next(new ErrorResponse(`User is already verified  - bb`, 400))
+    if (!user) return next(new ErrorResponse(`This user doesn't exist!`, 400))
     if (user.isEmailVerified)
-      return next(new ErrorResponse(`User is already verified  - bb`, 400))
+      return next(new ErrorResponse(`This user is already verified.`, 400))
 
     const token = await UserVerification.findOne({
       userId: user._id,
       token: verification_token
     })
-    if (!token) return next(new ErrorResponse(`Invalid link -bb`, 400))
+    if (!token)
+      return next(
+        new ErrorResponse(
+          `The token fairy must have taken it.</br> Couldn't find the token you were looking for.`,
+          400
+        )
+      )
 
     const now = new Date()
     if (now > token.expiresAt) {
       // await UserVerification.findByIdAndRemove(token._id)
-      return next(new ErrorResponse(`Token has expired. -bb`, 400))
+      return next(
+        new ErrorResponse(
+          `The token has passed its expiration date. Time to get a new one.`,
+          400
+        )
+      )
     }
 
     await User.updateOne({ _id: user._id, isEmailVerified: true })
     await UserVerification.findByIdAndRemove(token._id)
 
-    return next(new ErrorResponse(`Email verified succesfully. -bb`, 200))
+    return next(
+      new ErrorResponse(`You're now a verified email champion! Congrats!`, 200)
+    )
   })
 )
 
