@@ -19,8 +19,7 @@ router.get(
   auth,
   asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id).select('-password')
-    // const socket = req.app.get('socket')
-    // socket.emit('test', { user: user })
+
     res.status(200).json({
       success: true,
       user: user

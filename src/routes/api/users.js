@@ -212,10 +212,7 @@ router.post(
     const oldToken = await UserVerification.findOne({ userId: user_id })
     if (!oldToken)
       return next(
-        new ErrorResponse(
-          `The token fairy must have taken it. Couldn't find the token you were looking for.`,
-          400
-        )
+        new ErrorResponse(`Couldn't find the token you were looking for.`, 400)
       )
     const now = new Date()
     if (now < oldToken.expiresAt)
@@ -299,6 +296,7 @@ router.put(
     let { user_id, verification_token } = req.body
 
     const user = await User.findOne({ _id: user_id })
+
     if (!user) return next(new ErrorResponse(`This user doesn't exist!`, 400))
     if (user.isEmailVerified)
       return next(new ErrorResponse(`This user is already verified.`, 400))
@@ -309,10 +307,7 @@ router.put(
     })
     if (!token)
       return next(
-        new ErrorResponse(
-          `The token fairy must have taken it.</br> Couldn't find the token you were looking for.`,
-          400
-        )
+        new ErrorResponse(`Couldn't find the token you were looking for.`, 400)
       )
 
     const now = new Date()
@@ -326,12 +321,20 @@ router.put(
       )
     }
 
-    await User.updateOne({ _id: user._id, isEmailVerified: true })
+    await User.updateOne({
+      _id: user._id,
+      isEmailVerified: true
+    })
     await UserVerification.findByIdAndRemove(token._id)
+    const updatedUser = await User.findOne({ _id: user._id })
 
-    return next(
-      new ErrorResponse(`You're now a verified email champion! Congrats!`, 200)
-    )
+    const socket = req.app.get('socket')
+    socket.broadcast.emit('email-confirmation', { updatedUser })
+
+    res.status(200).json({
+      success: true,
+      msg: `Congratulations! Your email has been successfully verified. You're part of the club now!`
+    })
   })
 )
 

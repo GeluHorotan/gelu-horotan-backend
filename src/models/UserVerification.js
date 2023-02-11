@@ -15,7 +15,7 @@ const tokenSchema = new Schema({
     type: Date,
     required: false,
     default: function () {
-      return Date.now() + 60 * 1000
+      return Date.now() + 60 * 60 * 1000
     }
   }
 })
