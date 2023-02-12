@@ -299,7 +299,10 @@ router.put(
 
     if (!user) return next(new ErrorResponse(`This user doesn't exist!`, 400))
     if (user.isEmailVerified)
-      return next(new ErrorResponse(`This user is already verified.`, 400))
+      res.status(200).json({
+        success: true,
+        msg: `Congratulations! Your email has been successfully verified. You're part of the club now!`
+      })
 
     const token = await UserVerification.findOne({
       userId: user._id,
@@ -329,7 +332,7 @@ router.put(
     const updatedUser = await User.findOne({ _id: user._id })
 
     const socket = req.app.get('socket')
-    socket.broadcast.emit('email-confirmation', { updatedUser })
+    socket.broadcast.emit('email-confirmation', updatedUser)
 
     res.status(200).json({
       success: true,
