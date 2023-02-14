@@ -7,14 +7,8 @@ const errorHandler = require('./middleware/error')
 var colors = require('colors')
 colors.enable()
 const app = express()
-const http = require('http').createServer(app)
 const socketio = require('socket.io')
-const io = socketio(http, {
-  cors: {
-    origin: '*', // your frontend server address
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-  }
-})
+
 // Connect Database
 connectDB()
 
@@ -50,14 +44,21 @@ app.use(
 // eslint-disable-next-line no-undef
 const PORT = process.env.PORT || 5000
 
-http.listen(8080, () => {
-  console.log(`Socket.io listening on port ${PORT}`)
-})
-
-io.on('connection', socket => {
-  app.set('socket', socket)
-})
-
 app.use(errorHandler)
 
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
+const server = app.listen(PORT, () =>
+  console.log(`Server started on port ${PORT}`)
+)
+
+const io = socketio(server, {
+  cors: {
+    origin: '*', // your frontend server address
+    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
+  }
+})
+io.on('connection', socket => {
+  socket.emit('test', {
+    test: 'test'
+  })
+  app.set('socket', socket)
+})
