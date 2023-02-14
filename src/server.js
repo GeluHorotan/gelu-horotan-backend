@@ -58,7 +58,7 @@ const io = socketio(server, {
 })
 io.on('connection', socket => {
   socket.emit('test', {
-    test: 'test'
+    test: socket
   })
   app.set('socket', socket)
 })
