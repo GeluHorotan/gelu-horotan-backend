@@ -58,7 +58,9 @@ const io = socketio(server, {
 })
 io.on('connection', socket => {
   socket.emit('test', {
-    test: socket
+    id: socket.id,
+    url: socket.request.headers.referer,
+    PORT: socket.request.socket.remotePort
   })
   app.set('socket', socket)
 })
