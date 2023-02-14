@@ -56,12 +56,7 @@ router.post(
 
     // Check if user exists
     if (user) {
-      return next(
-        new ErrorResponse(
-          `Whoops! It looks like this username is already taken. Better try a different one.`,
-          400
-        )
-      )
+      return next(new ErrorResponse(`This user already exists!`, 400))
     }
     firstName = capitalizeFirstLetter(firstName)
     lastName = capitalizeFirstLetter(lastName)

@@ -22,6 +22,7 @@ router.get(
 
     res.status(200).json({
       success: true,
+
       user: user
     })
   })
@@ -48,13 +49,13 @@ router.post(
 
     // Check if user exists
     if (!user) {
-      return next(new ErrorResponse(`Invalid credentials.  - bb`, 400))
+      return next(new ErrorResponse(`Invalid credentials.`, 400))
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
-      return next(new ErrorResponse(`Invalid credentials  - bb`, 400))
+      return next(new ErrorResponse(`Invalid credentials.`, 400))
     }
 
     // Return jsonwebtoken
@@ -72,7 +73,11 @@ router.post(
       },
       (err, token) => {
         if (err) throw err
-        res.status(200).json({ success: true, token: token })
+        res.status(200).json({
+          success: true,
+          msg: `You successfully logged in.`,
+          token: token
+        })
       }
     )
   })
