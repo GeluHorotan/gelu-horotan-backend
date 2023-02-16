@@ -57,10 +57,10 @@ const io = socketio(server, {
   }
 })
 io.on('connection', socket => {
-  // socket.emit('test', {
-  //   id: socket.id,
-  //   url: socket.request.headers.referer,
-  //   PORT: socket.request.socket.remotePort
-  // })
+  socket.emit('test', {
+    id: socket.id,
+    url: socket.request.headers.referer,
+    PORT: socket.request.socket.remotePort
+  })
   app.set('socket', socket)
 })
