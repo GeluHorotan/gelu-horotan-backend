@@ -15,7 +15,8 @@ const ErrorResponse = require('../../utils/errorResponse')
 router.post(
   '/',
   auth,
-  check('fullProjectName', 'Project name is required').notEmpty(),
+  check('fullProjectName', 'Project name is required!').notEmpty(),
+
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -86,6 +87,8 @@ router.post(
     const newProject = new Project({
       fullProjectName: req.body.fullProjectName,
       url: req.body.url,
+      domain: req.body.domain,
+      shortDesc: req.body.shortDesc,
       desc: req.body.desc,
       startDate: req.body.startDate,
       endDate: req.body.endDate,
@@ -107,7 +110,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await Project.find().sort({ startDate: 1 })
+    const projects = await Project.find().sort({ startDate: -1 })
     res.status(200).json({ success: true, projects: projects })
   })
 )
