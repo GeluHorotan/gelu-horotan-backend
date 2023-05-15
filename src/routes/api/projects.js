@@ -16,7 +16,6 @@ router.post(
   '/',
   auth,
   check('fullProjectName', 'Project name is required!').notEmpty(),
-
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -107,7 +106,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await Project.find().sort({ startDate: -1 })
+    const projects = await Project.find()
     res.status(200).json({ success: true, projects: projects })
   })
 )
