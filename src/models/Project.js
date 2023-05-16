@@ -9,6 +9,14 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  url: {
+    type: String,
+    required: true
+  },
+  domain: {
+    type: String,
+    required: true
+  },
   technologies: [
     {
       value: {
