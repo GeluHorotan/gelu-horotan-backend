@@ -42,6 +42,7 @@ router.post(
           mobileImage = result.secure_url
         }
       ))
+
     req.body.images.header &&
       (await cloudinary.uploader.upload(
         req.body.images.header,
@@ -58,9 +59,10 @@ router.post(
           headerImage = result.secure_url
         }
       ))
-    req.body.images.gallery &&
-      req.body.images.gallery.forEach(async image => {
-        await cloudinary.uploader.upload(
+
+    const uploadPromises = req.body.images.gallery.map(image => {
+      return new Promise((resolve, reject) => {
+        cloudinary.uploader.upload(
           image,
           {
             resource_type: 'image',
@@ -70,34 +72,46 @@ router.post(
           (err, result) => {
             if (err) {
               console.log(err)
-              return
+              reject(err)
+            } else {
+              const img = result.secure_url
+              resolve(img)
             }
-            galleryImages.push(result.secure_url)
           }
         )
       })
-
-    let projectImages = {
-      mobile: mobileImage,
-      header: headerImage,
-      gallery: galleryImages
-    }
-
-    const newProject = new Project({
-      fullProjectName: req.body.fullProjectName,
-      githubRepo: req.body.githubRepo,
-      url: req.body.url,
-      domain: req.body.domain,
-      desc: req.body.desc,
-      abbreviation: req.body.abbreviation,
-      team: req.body.team,
-      technologies: req.body.technologies,
-      images: projectImages
     })
 
-    const NewProject = await newProject.save()
+    Promise.all(uploadPromises)
+      .then(async galleryImages => {
+        console.log(galleryImages)
 
-    res.status(200).json({ success: true, project: NewProject })
+        let projectImages = {
+          mobile: mobileImage,
+          header: headerImage,
+          gallery: galleryImages
+        }
+
+        const newProject = new Project({
+          fullProjectName: req.body.fullProjectName,
+          githubRepo: req.body.githubRepo,
+          url: req.body.url,
+          domain: req.body.domain,
+          desc: req.body.desc,
+          abbreviation: req.body.abbreviation,
+          team: req.body.team,
+          technologies: req.body.technologies,
+          images: projectImages
+        })
+
+        const NewProject = await newProject.save()
+
+        res.status(200).json({ success: true, project: NewProject })
+      })
+      .catch(error => {
+        console.log(error)
+        // Handle any errors that occurred during the upload process
+      })
   })
 )
 
