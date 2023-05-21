@@ -85,6 +85,7 @@ router.post(
 
     const newProject = new Project({
       fullProjectName: req.body.fullProjectName,
+      githubRepo: req.body.githubRepo,
       url: req.body.url,
       domain: req.body.domain,
       desc: req.body.desc,

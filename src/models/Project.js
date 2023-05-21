@@ -9,6 +9,10 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  githubRepo: {
+    type: String,
+    required: true
+  },
   url: {
     type: String,
     required: true
