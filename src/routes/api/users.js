@@ -47,7 +47,14 @@ router.post(
       return next(new ErrorResponse(errors.array(), 400))
     }
 
-    let { firstName, lastName, email, password, profilePicture } = req.body
+    let {
+      firstName,
+      lastName,
+      email,
+      password,
+      profilePicture,
+      termsAndConditions
+    } = req.body
 
     const base64URL = profilePicture
     const file = base64URL
@@ -81,7 +88,8 @@ router.post(
       lastName,
       email,
       profilePicture: imageUrl,
-      password
+      password,
+      termsAndConditions
     })
 
     // Encrypt password

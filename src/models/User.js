@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
       'Please add a valid email.'
     ]
   },
+  termsAndConditions: {
+    type: Boolean,
+    default: false
+  },
   role: {
     type: Number,
     default: Role.User
