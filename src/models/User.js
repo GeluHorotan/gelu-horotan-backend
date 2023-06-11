@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
   },
   termsAndConditions: {
     type: Boolean,
-    default: false
+    required: [true, 'Please accept the terms and conditions.']
   },
   role: {
     type: Number,
@@ -33,10 +33,6 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Please add a password.'],
     minlength: 6,
     select: false
-  },
-  isEmailVerified: {
-    type: Boolean,
-    default: false
   },
   profilePicture: {
     type: String,
