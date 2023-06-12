@@ -50,6 +50,9 @@ const server = app.listen(PORT, () =>
   console.log(`Server started on port ${PORT}`)
 )
 
+server.keepAliveTimeout = 65000 // Ensure all inactive connections are terminated by the ALB, by setting this a few seconds higher than the ALB idle timeout
+server.headersTimeout = 66000
+
 const io = socketio(server, {
   cors: {
     origin: '*', // your frontend server address

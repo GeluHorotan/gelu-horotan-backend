@@ -120,8 +120,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const pName = 'The Sinners'
-    const projects = await Project.findOne({ pName })
+    const projects = await Project.find({}).sort({ createdAt: -1 }).exec()
 
     if (projects.length === 0) {
       return next(
