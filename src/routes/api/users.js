@@ -137,7 +137,7 @@ router.post(
       learn more about your company and how I can contribute to its success.
     </p>
     <p>
-      Please note that this email was sent from a no-reply address, so we won't
+      Please note that this email was sent from a no-reply address, so I won't
       be able to respond to any replies. However, I encourage you to visit my
       portfolio website for further information and to get in touch with me.
     </p>
