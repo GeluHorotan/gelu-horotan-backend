@@ -68,7 +68,6 @@ router.post(
 
     try {
       const projectImages = {
-        mobile: mobileImage,
         header: headerImage,
         gallery: galleryImages
       }
