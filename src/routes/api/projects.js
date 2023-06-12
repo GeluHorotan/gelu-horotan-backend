@@ -117,7 +117,6 @@ router.post(
 
 // @route    GET api/projects
 // @desc     Get all projects
-// @access   Private
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
@@ -132,7 +131,7 @@ router.get(
       )
     }
 
-    res.status(200).json({ success: true, projects: projects })
+    res.status(200).json({ success: true, test: projects })
   })
 )
 
