@@ -22,7 +22,6 @@ router.get(
 
     res.status(200).json({
       success: true,
-
       user: user
     })
   })
