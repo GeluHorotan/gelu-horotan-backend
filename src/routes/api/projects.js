@@ -121,7 +121,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await Project.find()
+    const projects = await Project.find({})
 
     if (!projects) {
       return next(
