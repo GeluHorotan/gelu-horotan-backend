@@ -122,16 +122,16 @@ router.get(
   asyncHandler(async (req, res, next) => {
     const projects = await Project.find({})
 
-    if (!projects) {
+    if (projects.length === 0) {
       return next(
         new ErrorResponse(
           `We're sorry, but we couldn't find the resource!`,
-          400
+          404
         )
       )
     }
 
-    res.status(200).json({ success: true, test: projects })
+    res.status(200).json({ success: true, projects: projects })
   })
 )
 
