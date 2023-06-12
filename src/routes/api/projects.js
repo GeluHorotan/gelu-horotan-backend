@@ -15,102 +15,83 @@ const ErrorResponse = require('../../utils/errorResponse')
 router.post(
   '/',
   auth,
-  check('fullProjectName', 'Project name is required!').notEmpty(),
+  [check('fullProjectName', 'Project name is required!').notEmpty()],
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       return next(new ErrorResponse(errors.array(), 400))
     }
 
-    let mobileImage, headerImage
-    let galleryImages = []
+    let headerImage,
+      galleryImages = []
 
-    req.body.images.mobile &&
-      (await cloudinary.uploader.upload(
-        req.body.images.mobile,
-        {
-          resource_type: 'image',
-          folder: `Projects/${req.body.fullProjectName}/mobile`,
-          public_id: 'mobileImage'
-        },
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          mobileImage = result.secure_url
-        }
-      ))
-
-    req.body.images.header &&
-      (await cloudinary.uploader.upload(
-        req.body.images.header,
-        {
-          resource_type: 'image',
-          folder: `Projects/${req.body.fullProjectName}/header`,
-          public_id: 'headerImage'
-        },
-        (err, result) => {
-          if (err) {
-            console.log(err)
-            return
-          }
-          headerImage = result.secure_url
-        }
-      ))
-
-    const uploadPromises = req.body.images.gallery.map(image => {
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload(
-          image,
+    try {
+      if (req.body.images.header) {
+        const headerResult = await cloudinary.uploader.upload(
+          req.body.images.header,
           {
             resource_type: 'image',
-            folder: `Projects/${req.body.fullProjectName}/gallery`,
-            public_id: `galleryImage${Date.now()}`
-          },
-          (err, result) => {
-            if (err) {
-              console.log(err)
-              reject(err)
-            } else {
-              const img = result.secure_url
-              resolve(img)
-            }
+            folder: `Projects/${req.body.fullProjectName}/header`,
+            public_id: 'headerImage'
           }
         )
-      })
-    })
+        headerImage = headerResult.secure_url
+      }
 
-    Promise.all(uploadPromises)
-      .then(async galleryImages => {
-        console.log(galleryImages)
-
-        let projectImages = {
-          mobile: mobileImage,
-          header: headerImage,
-          gallery: galleryImages
-        }
-
-        const newProject = new Project({
-          fullProjectName: req.body.fullProjectName,
-          githubRepo: req.body.githubRepo,
-          url: req.body.url,
-          domain: req.body.domain,
-          desc: req.body.desc,
-          abbreviation: req.body.abbreviation,
-          team: req.body.team,
-          technologies: req.body.technologies,
-          images: projectImages
+      const uploadPromises = req.body.images.gallery.map(image => {
+        return new Promise((resolve, reject) => {
+          cloudinary.uploader.upload(
+            image,
+            {
+              resource_type: 'image',
+              folder: `Projects/${req.body.fullProjectName}/gallery`,
+              public_id: `galleryImage${Date.now()}`
+            },
+            (err, result) => {
+              if (err) {
+                console.log(err)
+                reject(err)
+              } else {
+                const img = result.secure_url
+                resolve(img)
+              }
+            }
+          )
         })
-
-        const NewProject = await newProject.save()
-
-        res.status(200).json({ success: true, project: NewProject })
       })
-      .catch(error => {
-        console.log(error)
-        // Handle any errors that occurred during the upload process
+
+      galleryImages = await Promise.all(uploadPromises)
+    } catch (error) {
+      console.log(error)
+      return next(new ErrorResponse('Error uploading images', 500))
+    }
+
+    try {
+      const projectImages = {
+        mobile: mobileImage,
+        header: headerImage,
+        gallery: galleryImages
+      }
+
+      const newProject = new Project({
+        fullProjectName: req.body.fullProjectName,
+        githubRepo: req.body.githubRepo,
+        url: req.body.url,
+        domain: req.body.domain,
+        desc: req.body.desc,
+        abbreviation: req.body.abbreviation,
+        team: req.body.team,
+        technologies: req.body.technologies,
+        images: projectImages
       })
+
+      const createdProject = await newProject.save()
+
+      res.status(200).json({ success: true, project: createdProject })
+    } catch (error) {
+      console.log(error)
+      return next(new ErrorResponse('Error creating project', 500))
+    }
   })
 )
 

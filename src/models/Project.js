@@ -52,11 +52,14 @@ const ProjectSchema = new mongoose.Schema({
     gallery: {
       type: Array
     },
-    mobile: {
-      type: String
-    },
     header: {
       type: String
+    }
+  },
+  createdAt: {
+    type: Date,
+    default: function () {
+      return Date.now()
     }
   }
 })
