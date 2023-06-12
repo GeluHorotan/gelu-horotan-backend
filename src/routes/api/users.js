@@ -198,7 +198,7 @@ router.get(
     if (users.length === 0) {
       return next(
         new ErrorResponse(
-          `Uh oh, couldn't find the resource what with the id of ${roleQuery}!`,
+          `We're sorry, but we couldn't find the resource what with the id of ${roleQuery}!`,
           400
         )
       )

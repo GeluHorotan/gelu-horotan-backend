@@ -122,6 +122,16 @@ router.get(
   '/',
   asyncHandler(async (req, res, next) => {
     const projects = await Project.find()
+
+    if (!projects) {
+      return next(
+        new ErrorResponse(
+          `We're sorry, but we couldn't find the resource!`,
+          400
+        )
+      )
+    }
+
     res.status(200).json({ success: true, projects: projects })
   })
 )
