@@ -22,7 +22,6 @@ router.post(
       return next(new ErrorResponse(errors.array(), 400))
     }
 
-    const user = await User.findById(req.user.id).select('-password')
     let mobileImage, headerImage
     let galleryImages = []
 
@@ -120,7 +119,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await User.find({}).sort({ createdAt: -1 }).exec()
+    const projects = await Project.find({}).sort({ createdAt: -1 }).exec()
 
     if (projects.length === 0) {
       return next(
