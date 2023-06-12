@@ -120,7 +120,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await Project.find({})
+    const projects = await Project.find({}).sort({ createdAt: -1 }).exec()
 
     if (projects.length === 0) {
       return next(
@@ -131,7 +131,10 @@ router.get(
       )
     }
 
-    res.status(200).json({ success: true, projects: projects })
+    res.status(200).json({
+      success: true,
+      projects: projects
+    })
   })
 )
 
