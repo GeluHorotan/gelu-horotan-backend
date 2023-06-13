@@ -58,10 +58,11 @@ const ProjectSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: function () {
-      return Date.now()
-    }
+    default: Date.now,
+    index: true // Add index option to create an index on the createdAt field
   }
 })
+
+ProjectSchema.index({ createdAt: -1 }) // Create an index on the createdAt field
 
 module.exports = mongoose.model('project', ProjectSchema)
