@@ -116,6 +116,12 @@ router.post(
       #firstName {
         font-weight: 700;
       }
+      #socials {
+        display: flex;
+        flex-direction:row;
+        
+        
+      }
     </style>
   </head>
   <body>
@@ -150,6 +156,28 @@ router.post(
       Best Regards,<br />
       Gelu Horotan!
     </p>
+    <h4>Socials:</h4>
+  <a href="https://github.com/GeluHorotan" target="_blank" rel="noopener noreferrer">
+   
+    Github
+  </a>
+ <br/>
+  <a href="https://www.linkedin.com/in/gelu-horotan/" target="_blank" rel="noopener noreferrer">
+
+    LinkedIn
+  </a>
+   <br/>
+  <a href="https://twitter.com/oxymoron365" target="_blank" rel="noopener noreferrer">
+
+    Twitter
+  </a>
+   <br/>
+  <a href="https://geluhorotan.com/" target="_blank" rel="noopener noreferrer">
+     
+
+  Portfolio
+  </a>
+
   </body>
 </html>
 `

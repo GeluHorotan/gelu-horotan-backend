@@ -80,20 +80,10 @@ router.post(
 <p>
   Thank you for reaching out to me through my personal portfolio platform. I
   appreciate your message and the opportunity to connect with you. I wanted to
-  let you know that I'll be getting back to you in a few hours to discuss your
+  let you know that I'll be getting back to you as fast as possible to discuss your
   inquiry in more detail.
 </p>
-<p>
-  In the meantime, I invite you to take a look at my portfolio where you'll find
-  detailed information about my background, qualifications, and the work I've
-  done. Feel free to explore my projects and get a better sense of my expertise
-  and capabilities.
-</p>
-<p>
-  If you have any specific questions or topics you'd like to discuss, please
-  don't hesitate to mention them in your reply. This will help me better
-  understand your needs and ensure our conversation is productive.
-</p>
+
 <p>
   Please note that this email was sent from a no-reply address, so I won't be
   able to respond to any replies directly. However, I'll be reaching out to you
@@ -107,6 +97,27 @@ router.post(
   Best Regards,<br />
   Gelu Horotan
 </p>
+ <h4>Socials:</h4>
+  <a href="https://github.com/GeluHorotan" target="_blank" rel="noopener noreferrer">
+   
+    Github
+  </a>
+  <br/>
+  <a href="https://www.linkedin.com/in/gelu-horotan/" target="_blank" rel="noopener noreferrer">
+
+    LinkedIn
+  </a>
+   <br/>
+  <a href="https://twitter.com/oxymoron365" target="_blank" rel="noopener noreferrer">
+
+    Twitter
+  </a>
+    <br/>
+  <a href="https://geluhorotan.com/" target="_blank" rel="noopener noreferrer">
+     
+
+  Portfolio
+  </a>
   </body>
 </html>
 `
