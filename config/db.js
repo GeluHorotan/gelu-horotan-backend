@@ -4,17 +4,18 @@ const config = require('config')
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
-// TEST
 const connectDB = async () => {
+  const startTime = new Date()
   try {
-    await mongoose.connect(process.env.MONGOURI, {
+    await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      poolSize: poolSize
     })
-    console.log('MongoDB Connected...')
+    const endTime = new Date()
+    console.log(`MongoDB Connected in ${endTime - startTime}ms`)
   } catch (err) {
     console.error(err.message)
-    // Exit process with failure
     process.exit(1)
   }
 }
