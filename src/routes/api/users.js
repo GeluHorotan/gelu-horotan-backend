@@ -206,7 +206,7 @@ router.post(
         if (err) throw err
         res.status(200).json({
           success: true,
-          msg: 'User created successfully. Welcome to the club!',
+          msg: 'User created successfully!',
           token: token
         })
       }
