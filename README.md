@@ -24,6 +24,7 @@ Backend:
 * Mongo DB.
 * Mongoose.
 * Socket.IO.
+* Docker.
 
 ## Concepts covered
 
