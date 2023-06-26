@@ -11,20 +11,26 @@ This repository serves as the backbone of my [personal portfolio](https://github
 
 ## Technologies used:
 
+Frontend:
+
 * React (Next JS).
 * Typescript.
+* Tailwind CSS.
+* React Query (TanStack).
+
+Backend:
+
 * Node JS (Express JS).
 * Mongo DB.
 * Mongoose.
 * Socket.IO.
-* Tailwind CSS.
-* React Query (TanStack).
 
 ## Concepts covered
 
 * Creating a web server using Express.
 * Building a WebSocket server for real-time communication.
 * Performing basic CRUD (Create, Read, Update, Delete) operations on the database.
+* Utilized Docker containers to package the application along with its dependencies into a standardized unit.
 * Use of CORS (Cross-Origin Resource Sharing) to allow whitelisted requests to the web server
 * Building a custom error middleware to handle and provide meaningful error responses.
 * Uploading files to a third-party image processor for efficient image handling and processing.
