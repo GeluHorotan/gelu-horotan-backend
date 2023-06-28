@@ -9,11 +9,12 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  githubRepo: {
+
+  url: {
     type: String,
     required: true
   },
-  url: {
+  githubUrl: {
     type: String,
     required: true
   },
@@ -25,11 +26,19 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  linesOfCode: {
+    type: String,
+    required: true
+  },
   domain: {
     type: String,
     required: true
   },
   keyHighlights: {
+    type: String,
+    required: true
+  },
+  conceptsCovered: {
     type: String,
     required: true
   },
@@ -40,6 +49,9 @@ const ProjectSchema = new mongoose.Schema({
         type: String
       },
       label: {
+        type: String
+      },
+      img: {
         type: String
       }
     }
