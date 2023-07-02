@@ -13,7 +13,7 @@ This repository serves as the backbone of my [personal portfolio](https://github
 
 Frontend:
 
-* React (Next JS).
+* React (Next.js).
 * Typescript.
 * Tailwind CSS.
 * React Query (TanStack).
@@ -28,7 +28,7 @@ Backend:
 
 ## Concepts covered
 
-* Creating a web server using Express.
+* Creating a web server using Express.js.
 * Building a WebSocket server for real-time communication.
 * Performing basic CRUD (Create, Read, Update, Delete) operations on the database.
 * Utilized Docker containers to package the application along with its dependencies into a standardized unit.
