@@ -7,7 +7,6 @@ const errorHandler = require('./middleware/error')
 var colors = require('colors')
 colors.enable()
 const app = express()
-const socketio = require('socket.io')
 
 // Connect Database
 connectDB()
@@ -50,18 +49,3 @@ app.use(errorHandler)
 const server = app.listen(PORT, () =>
   console.log(`Server started on port ${PORT}`)
 )
-
-const io = socketio(server, {
-  cors: {
-    origin: '*', // your frontend server address
-    methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']
-  }
-})
-io.on('connection', socket => {
-  socket.emit('test', {
-    id: socket.id,
-    url: socket.request.headers.referer,
-    PORT: socket.request.socket.remotePort
-  })
-  app.set('socket', socket)
-})
