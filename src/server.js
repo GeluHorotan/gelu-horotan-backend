@@ -44,3 +44,7 @@ app.use(
 )
 
 app.use(errorHandler)
+
+const server = app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`)
+})
