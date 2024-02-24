@@ -7,9 +7,15 @@ const errorHandler = require('./middleware/error')
 var colors = require('colors')
 colors.enable()
 const app = express()
+// eslint-disable-next-line no-undef
+const PORT = process.env.PORT || 3000
 
 // Connect Database
-connectDB()
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log('listening for requests')
+  })
+})
 
 // Cors
 
@@ -40,9 +46,6 @@ app.use(
     useTempFiles: true
   })
 )
-
-// eslint-disable-next-line no-undef
-const PORT = process.env.PORT || 5000
 
 app.use(errorHandler)
 
