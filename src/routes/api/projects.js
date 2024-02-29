@@ -74,16 +74,14 @@ router.post(
 
       const newProject = new Project({
         fullProjectName: req.body.fullProjectName,
-        startDate: req.body.startDate,
         githubUrl: req.body.githubUrl,
-        endDate: req.body.endDate,
         linesOfCode: req.body.linesOfCode,
         keyHighlights: req.body.keyHighlights,
         conceptsCovered: req.body.conceptsCovered,
         url: req.body.url,
         domain: req.body.domain,
         desc: req.body.desc,
-        abbreviation: req.body.abbreviation,
+
         team: req.body.team,
         technologies: req.body.technologies,
         images: projectImages

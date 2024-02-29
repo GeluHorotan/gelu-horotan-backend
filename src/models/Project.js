@@ -15,17 +15,9 @@ const ProjectSchema = new mongoose.Schema({
     required: true
   },
   githubUrl: {
-    type: String,
-    required: true
+    type: String
   },
-  startDate: {
-    type: String,
-    required: true
-  },
-  endDate: {
-    type: String,
-    required: true
-  },
+
   linesOfCode: {
     type: String,
     required: true
