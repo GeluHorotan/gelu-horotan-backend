@@ -102,7 +102,7 @@ router.post(
 router.get(
   '/',
   asyncHandler(async (req, res, next) => {
-    const projects = await Project.find({})
+    const projects = await Project.find({}).sort({ createdAt: -1 })
 
     if (projects.length === 0) {
       return next(
